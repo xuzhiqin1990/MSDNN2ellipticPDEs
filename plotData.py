@@ -340,7 +340,7 @@ def plotTest_MSE_REL(data2mse, data2rel, epoches, actName=None, seedNo=1000, out
 
 
 def plot_Test_MSE_REL_2ActFuncs(data_mse1, data_rel1, data_mse2, data_rel2, epoches, actName1=None, actName2=None,
-                             seedNo=1000, outPath=None, xaxis_scale=False, yaxis_scale=False):
+                                seedNo=1000, outPath=None, xaxis_scale=False, yaxis_scale=False):
     # fig2mse_test = plt.figure(figsize=(10, 8), dpi=98)
     fig2mse_test = plt.figure(figsize=(9, 6.5), dpi=98)
     ax = plt.gca()
@@ -631,6 +631,8 @@ def plot_Hot_solution2test(solu2test, size_vec2mat=20, actName=None, seedNo=1000
         fntmp = '%s/%s_%s' % (outPath, seedNo, 'Us2ReLU2test')
     elif actName == 'ReLU':
         fntmp = '%s/%s_%s' % (outPath, seedNo, 'UReLU2test')
+    elif actName == 'tanh':
+        fntmp = '%s/%s_%s' % (outPath, seedNo, 'Utanh2test')
     DNN_tools.mySaveFig(plt, fntmp, ax=ax, isax=1, iseps=0)
 
 
