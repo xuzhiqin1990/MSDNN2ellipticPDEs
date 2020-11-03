@@ -279,3 +279,37 @@ def get_laplace_multi_scale_infos(input_dim=1, out_dim=1, mesh_number=2, region_
         A_eps = elliptic_coef2E5(input_dim, out_dim)
 
     return u_true, f, A_eps, u_left, u_right, u_bottom, u_top
+
+
+def get_laplace_multi_scale_infos3D(input_dim=1, out_dim=1, mesh_number=2, region_lb=0.0, region_rt=1.0, laplace_name=None):
+    if laplace_name == 'multi_scale3D_1':
+        fside = lambda x, y, z: 3.0 * ((np.pi)**2) * (tf.sin(np.pi * x) * tf.sin(np.pi * y) * tf.sin(np.pi * z))
+        u_true = lambda x, y, z: tf.sin(np.pi * x) * tf.sin(np.pi * y) * tf.sin(np.pi * z)
+        A_eps = lambda x, y, z: 1.0
+        return u_true, fside, A_eps
+    elif laplace_name == 'multi_scale3D_2':
+        fside = lambda x, y, z: 3.0*((np.pi)**2)*(1.0+tf.cos(np.pi*x)*tf.cos(3*np.pi*y)*tf.cos(5*np.pi*z))*\
+                                (tf.sin(np.pi*x) * tf.sin(np.pi*y) * tf.sin(np.pi*z))+\
+        ((np.pi)**2)*(tf.sin(np.pi*x)*tf.cos(3*np.pi*y)*tf.cos(5*np.pi*z)*tf.cos(np.pi*x)*tf.sin(np.pi*y)*tf.sin(np.pi*z))+\
+        3.0*((np.pi)** 2)*(tf.cos(np.pi*x)*tf.sin(3*np.pi*y)*tf.cos(5*np.pi*z)*tf.sin(np.pi*x)*tf.cos(np.pi*y)*tf.sin(np.pi*z))+ \
+        5.0*((np.pi)**2)*(tf.cos(np.pi*x)*tf.cos(3*np.pi*y)*tf.sin(5*np.pi*z)*tf.sin(np.pi * x)*tf.sin(np.pi*y)*tf.cos(np.pi*z))
+        u_true = lambda x, y, z: tf.sin(np.pi * x) * tf.sin(np.pi * y) * tf.sin(np.pi * z)
+        A_eps = lambda x, y, z: 1.0 + tf.cos(np.pi * x) * tf.cos(3 * np.pi * y) * tf.cos(5 * np.pi * z)
+        return u_true, fside, A_eps
+
+
+def get_laplace_multi_scale_infos5D(input_dim=1, out_dim=1, mesh_number=2, region_lb=0.0, region_rt=1.0,
+                                     laplace_name=None):
+    if laplace_name == 'multi_scale10D_1':
+        fside = lambda x, y, z: 5.0 * ((np.pi) ** 2) * (tf.sin(np.pi * x) * tf.sin(np.pi * y) * tf.sin(np.pi * z))
+        u_true = lambda x, y, z: tf.sin(np.pi * x) * tf.sin(np.pi * y) * tf.sin(np.pi * z)
+        A_eps = lambda x, y, z: 1.0
+        return u_true, fside, A_eps
+
+
+def get_laplace_multi_scale_infos10D(input_dim=1, out_dim=1, mesh_number=2, region_lb=0.0, region_rt=1.0, laplace_name=None):
+    if laplace_name == 'multi_scale10D_1':
+        fside = lambda x, y, z: 10.0 * ((np.pi)**2) * (tf.sin(np.pi * x) * tf.sin(np.pi * y) * tf.sin(np.pi * z))
+        u_true = lambda x, y, z: tf.sin(np.pi * x) * tf.sin(np.pi * y) * tf.sin(np.pi * z)
+        A_eps = lambda x, y, z: 1.0
+        return u_true, fside, A_eps
