@@ -185,7 +185,7 @@ def solve_laplace(R):
             train_opt = tf.placeholder_with_default(input=True, shape=[], name='train_opt')
 
             # 供选择的网络模式
-            if R['model'] == 'laplace_DNN':
+            if R['model'] == 'PDE_DNN':
                 U_NN1 = DNN_base.PDE_DNN(X_it, Weights_NN1, Biases_NN1, hidden_layers, activate_name=act_func1)
                 ULeft_NN1 = DNN_base.PDE_DNN(X_left_bd, Weights_NN1, Biases_NN1, hidden_layers, activate_name=act_func1)
                 URight_NN1 = DNN_base.PDE_DNN(X_right_bd, Weights_NN1, Biases_NN1, hidden_layers, activate_name=act_func1)
@@ -193,7 +193,7 @@ def solve_laplace(R):
                 U_NN2 = DNN_base.PDE_DNN(X_it, Weights_NN2, Biases_NN2, hidden_layers, activate_name=act_func2)
                 ULeft_NN2 = DNN_base.PDE_DNN(X_left_bd, Weights_NN2, Biases_NN2, hidden_layers, activate_name=act_func2)
                 URight_NN2 = DNN_base.PDE_DNN(X_right_bd, Weights_NN2, Biases_NN2, hidden_layers, activate_name=act_func2)
-            elif R['model'] == 'laplace_DNN_BN':
+            elif R['model'] == 'PDE_DNN_BN':
                 U_NN1 = DNN_base.PDE_DNN_BN(X_it, Weights_NN1, Biases_NN1, hidden_layers, activate_name=act_func1,
                                             is_training=train_opt)
                 ULeft_NN1 = DNN_base.PDE_DNN_BN(X_left_bd, Weights_NN1, Biases_NN1, hidden_layers, activate_name=act_func1,
@@ -207,7 +207,7 @@ def solve_laplace(R):
                                                 is_training=train_opt)
                 URight_NN2 = DNN_base.PDE_DNN_BN(X_right_bd, Weights_NN2, Biases_NN2, hidden_layers, activate_name=act_func2,
                                                 is_training=train_opt)
-            elif R['model'] == 'laplace_DNN_scale':
+            elif R['model'] == 'PDE_DNN_scale':
                 freq = np.concatenate(([1], np.arange(1, 100 - 1)), axis=0)
                 U_NN1 = DNN_base.PDE_DNN_scale(X_it, Weights_NN1, Biases_NN1, hidden_layers, freq, activate_name=act_func1)
                 ULeft_NN1 = DNN_base.PDE_DNN_scale(X_left_bd, Weights_NN1, Biases_NN1, hidden_layers, freq, activate_name=act_func1)
@@ -216,7 +216,25 @@ def solve_laplace(R):
                 U_NN2 = DNN_base.PDE_DNN_scale(X_it, Weights_NN2, Biases_NN2, hidden_layers, freq, activate_name=act_func2)
                 ULeft_NN2 = DNN_base.PDE_DNN_scale(X_left_bd, Weights_NN2, Biases_NN2, hidden_layers, freq, activate_name=act_func2)
                 URight_NN2 = DNN_base.PDE_DNN_scale(X_right_bd, Weights_NN2, Biases_NN2, hidden_layers, freq, activate_name=act_func2)
-            elif R['model'] == 'laplace_CPDNN':
+            elif R['model'] == 'PDE_DNN_adapt_scale':
+                freq = np.concatenate(([1], np.arange(1, 100 - 1)), axis=0)
+                U_NN1 = DNN_base.PDE_DNN_adapt_scale(X_it, Weights_NN1, Biases_NN1, hidden_layers, freq, activate_name=act_func1)
+                ULeft_NN1 = DNN_base.PDE_DNN_adapt_scale(X_left_bd, Weights_NN1, Biases_NN1, hidden_layers, freq, activate_name=act_func1)
+                URight_NN1 = DNN_base.PDE_DNN_adapt_scale(X_right_bd, Weights_NN1, Biases_NN1, hidden_layers, freq, activate_name=act_func1)
+
+                U_NN2 = DNN_base.PDE_DNN_adapt_scale(X_it, Weights_NN2, Biases_NN2, hidden_layers, freq, activate_name=act_func2)
+                ULeft_NN2 = DNN_base.PDE_DNN_adapt_scale(X_left_bd, Weights_NN2, Biases_NN2, hidden_layers, freq, activate_name=act_func2)
+                URight_NN2 = DNN_base.PDE_DNN_adapt_scale(X_right_bd, Weights_NN2, Biases_NN2, hidden_layers, freq, activate_name=act_func2)
+            elif R['model'] == 'PDE_DNN_FourierBase':
+                freq = np.concatenate(([1], np.arange(1, 100 - 1)), axis=0)
+                U_NN1 = DNN_base.PDE_DNN_FourierBase(X_it, Weights_NN1, Biases_NN1, hidden_layers, freq, activate_name=act_func1)
+                ULeft_NN1 = DNN_base.PDE_DNN_FourierBase(X_left_bd, Weights_NN1, Biases_NN1, hidden_layers, freq, activate_name=act_func1)
+                URight_NN1 = DNN_base.PDE_DNN_FourierBase(X_right_bd, Weights_NN1, Biases_NN1, hidden_layers, freq, activate_name=act_func1)
+
+                U_NN2 = DNN_base.PDE_DNN_FourierBase(X_it, Weights_NN2, Biases_NN2, hidden_layers, freq, activate_name=act_func2)
+                ULeft_NN2 = DNN_base.PDE_DNN_FourierBase(X_left_bd, Weights_NN2, Biases_NN2, hidden_layers, freq, activate_name=act_func2)
+                URight_NN2 = DNN_base.PDE_DNN_FourierBase(X_right_bd, Weights_NN2, Biases_NN2, hidden_layers, freq, activate_name=act_func2)
+            elif R['model'] == 'PDE_CPDNN':
                 # 这个还需要研究，先放在这里。可分解的傅里叶展开，可以直接使用phase shift model
                 # 不可以分解的傅里叶展开怎么处理呢？
                 U_NN1 = CPDNN_base.CPS_DNN(X_it, index2freq, Weights0_X, Biases0_X, Weights_COS_X, Biases_COS_X,
@@ -352,8 +370,8 @@ def solve_laplace(R):
                     train_mse_nn1, train_rel_nn1, log_out=log_fileout_NN1)
 
                 DNN_tools.print_and_log_train_one_epoch(
-                    i_epoch, run_times, tmp_lr, temp_penalty_bd, p_WB, loss_it_nn1, loss_bd_nn1, loss_nn1,
-                    train_mse_nn1, train_rel_nn1, log_out=log_fileout_NN2)
+                    i_epoch, run_times, tmp_lr, temp_penalty_bd, p_WB, loss_it_nn2, loss_bd_nn2, loss_nn2,
+                    train_mse_nn2, train_rel_nn2, log_out=log_fileout_NN2)
 
                 # ---------------------------   test network ----------------------------------------------
                 test_epoch.append(i_epoch / 1000)
@@ -523,10 +541,12 @@ if __name__ == "__main__":
         R['hidden_layers'] = (400, 300, 300, 200, 100, 100)
         # R['hidden_layers'] = (500, 400, 300, 300, 200, 100, 100)
 
-    # R['model'] = 'laplace_DNN'                           # 使用的网络模型
-    # R['model'] = 'laplace_DNN_BN'
-    R['model'] = 'laplace_DNN_scale'
-    # R['model'] = 'laplace_CPDNN'
+    # R['model'] = 'PDE_DNN'                           # 使用的网络模型
+    # R['model'] = 'PDE_DNN_BN'
+    # R['model'] = 'PDE_DNN_scale'
+    # R['model'] = 'PDE_DNN_adapt_scale'
+    R['model'] = 'PDE_DNN_FourierBase'
+    # R['model'] = 'PDE_CPDNN'
 
     # 激活函数的选择
     # R['act_name2NN1'] = 'relu'

@@ -170,18 +170,18 @@ def solve_laplace(R):
             Weights_SIN_Y.append(Weights_Y)
             Biases_SIN_Y.append(Biases_Y)
 
-    if R['model'] == 'laplace_DNN_adapt_scale':
-        freq_frag = np.concatenate(([1], np.arange(1, 100 - 1)), axis=0)
-        Unit_num = int(hidden_layers[0] / len(freq_frag))
-        # np.repeat(a, repeats, axis=None)
-        # 输入: a是数组,repeats是各个元素重复的次数(repeats一般是个标量,稍复杂点是个list),在axis的方向上进行重复
-        # 返回: 如果不指定axis,则将重复后的结果展平(维度为1)后返回;如果指定axis,则不展平
-        init_mixcoe = np.repeat(freq_frag, Unit_num)
-        init_mixcoe = np.concatenate((init_mixcoe, np.ones([hidden_layers[0] - Unit_num * len(freq_frag)]) * freq_frag[-1]))
-        init_mixcoe = init_mixcoe.astype(np.float32)
-    else:
-        init_mixcoe = np.array([[0.0]])
-        init_mixcoe = init_mixcoe.astype(np.float32)
+    # if R['model'] == 'laplace_DNN_adapt_scale':
+    #     freq_frag = np.concatenate(([1], np.arange(1, 100 - 1)), axis=0)
+    #     Unit_num = int(hidden_layers[0] / len(freq_frag))
+    #     # np.repeat(a, repeats, axis=None)
+    #     # 输入: a是数组,repeats是各个元素重复的次数(repeats一般是个标量,稍复杂点是个list),在axis的方向上进行重复
+    #     # 返回: 如果不指定axis,则将重复后的结果展平(维度为1)后返回;如果指定axis,则不展平
+    #     init_mixcoe = np.repeat(freq_frag, Unit_num)
+    #     init_mixcoe = np.concatenate((init_mixcoe, np.ones([hidden_layers[0] - Unit_num * len(freq_frag)]) * freq_frag[-1]))
+    #     init_mixcoe = init_mixcoe.astype(np.float32)
+    # else:
+    #     init_mixcoe = np.array([[0.0]])
+    #     init_mixcoe = init_mixcoe.astype(np.float32)
 
     global_steps = tf.Variable(0, trainable=False)
     with tf.device('/gpu:%s' % (R['gpuNo'])):
@@ -194,24 +194,24 @@ def solve_laplace(R):
             boundary_penalty = tf.placeholder_with_default(input=1e3, shape=[], name='bd_p')
             in_learning_rate = tf.placeholder_with_default(input=1e-5, shape=[], name='lr')
             train_opt = tf.placeholder_with_default(input=True, shape=[], name='train_opt')
-            multi_scale_ceof = tf.Variable(initial_value=init_mixcoe, dtype='float32', name='M0')
+            # multi_scale_ceof = tf.Variable(initial_value=init_mixcoe, dtype='float32', name='M0')
 
             # 供选择的网络模式
-            if R['model'] == 'laplace_DNN':
+            if R['model'] == 'PDE_DNN':
                 # 在变量的内部区域训练
                 U_NN = DNN_base.PDE_DNN(XY_it, W2NN, B2NN, hidden_layers, activate_name=act_func)
                 ULeft_NN = DNN_base.PDE_DNN(XY_left_bd, W2NN, B2NN, hidden_layers, activate_name=act_func)
                 URight_NN = DNN_base.PDE_DNN(XY_right_bd, W2NN, B2NN, hidden_layers, activate_name=act_func)
                 UBottom_NN = DNN_base.PDE_DNN(XY_bottom_bd, W2NN, B2NN, hidden_layers, activate_name=act_func)
                 UTop_NN = DNN_base.PDE_DNN(XY_top_bd, W2NN, B2NN, hidden_layers, activate_name=act_func)
-            elif R['model'] == 'laplace_DNN_BN':
+            elif R['model'] == 'PDE_DNN_BN':
                 # 在变量的内部区域训练
                 U_NN = DNN_base.PDE_DNN_BN(XY_it, W2NN, B2NN, hidden_layers, activate_name=act_func, is_training=train_opt)
                 ULeft_NN = DNN_base.PDE_DNN_BN(XY_left_bd, W2NN, B2NN, hidden_layers, activate_name=act_func, is_training=train_opt)
                 URight_NN = DNN_base.PDE_DNN_BN(XY_right_bd, W2NN, B2NN, hidden_layers, activate_name=act_func, is_training=train_opt)
                 UBottom_NN = DNN_base.PDE_DNN_BN(XY_bottom_bd, W2NN, B2NN, hidden_layers, activate_name=act_func, is_training=train_opt)
                 UTop_NN = DNN_base.PDE_DNN_BN(XY_top_bd, W2NN, B2NN, hidden_layers, activate_name=act_func, is_training=train_opt)
-            elif R['model'] == 'laplace_DNN_scale':
+            elif R['model'] == 'PDE_DNN_scale':
                 # 在变量的内部区域训练
                 freq = np.concatenate(([1], np.arange(1, 100 - 1)), axis=0)
                 U_NN = DNN_base.PDE_DNN_scale(XY_it, W2NN, B2NN, hidden_layers, freq, activate_name=act_func)
@@ -219,27 +219,29 @@ def solve_laplace(R):
                 URight_NN = DNN_base.PDE_DNN_scale(XY_right_bd, W2NN, B2NN, hidden_layers, freq, activate_name=act_func)
                 UBottom_NN = DNN_base.PDE_DNN_scale(XY_bottom_bd, W2NN, B2NN, hidden_layers, freq, activate_name=act_func)
                 UTop_NN = DNN_base.PDE_DNN_scale(XY_top_bd, W2NN, B2NN, hidden_layers, freq, activate_name=act_func)
-            elif R['model'] == 'laplace_DNN_adapt_scale':
-                U_NN = DNN_base.PDE_DNN_adapt_scale(
-                    XY_it, W2NN, B2NN, hidden_layers, multi_scale_ceof, activate_name=act_func)
-                # 上下左右边界训练，使得训练结果(参数和偏置模型)逼近边界
-                ULeft_NN = DNN_base.PDE_DNN_adapt_scale(
-                    XY_left_bd, W2NN, B2NN, hidden_layers, multi_scale_ceof, activate_name=act_func)
-                URight_NN = DNN_base.PDE_DNN_adapt_scale(
-                    XY_right_bd, W2NN, B2NN, hidden_layers, multi_scale_ceof, activate_name=act_func)
-                UBottom_NN = DNN_base.PDE_DNN_adapt_scale(
-                    XY_bottom_bd, W2NN, B2NN, hidden_layers, multi_scale_ceof, activate_name=act_func)
-                UTop_NN = DNN_base.PDE_DNN_adapt_scale(
-                    XY_top_bd, W2NN, B2NN, hidden_layers, multi_scale_ceof, activate_name=act_func)
-            elif R['model'] == 'laplace_CPDNN':
+            elif R['model'] == 'PDE_DNN_adapt_scale':
+                freqs = np.concatenate(([1], np.arange(1, 100 - 1)), axis=0)
+                U_NN = DNN_base.PDE_DNN_adapt_scale(XY_it, W2NN, B2NN, hidden_layers, freqs, activate_name=act_func)
+                ULeft_NN = DNN_base.PDE_DNN_adapt_scale(XY_left_bd, W2NN, B2NN, hidden_layers, freqs, activate_name=act_func)
+                URight_NN = DNN_base.PDE_DNN_adapt_scale(XY_right_bd, W2NN, B2NN, hidden_layers, freqs, activate_name=act_func)
+                UBottom_NN = DNN_base.PDE_DNN_adapt_scale(XY_bottom_bd, W2NN, B2NN, hidden_layers, freqs, activate_name=act_func)
+                UTop_NN = DNN_base.PDE_DNN_adapt_scale(XY_top_bd, W2NN, B2NN, hidden_layers, freqs, activate_name=act_func)
+            elif R['model'] == 'PDE_DNN_FourierBase':
+                freqs = np.concatenate(([1], np.arange(1, 100 - 1)), axis=0)
+                U_NN = DNN_base.PDE_DNN_FourierBase(XY_it, W2NN, B2NN, hidden_layers, freqs, activate_name=act_func)
+                ULeft_NN = DNN_base.PDE_DNN_FourierBase(XY_left_bd, W2NN, B2NN, hidden_layers, freqs, activate_name=act_func)
+                URight_NN = DNN_base.PDE_DNN_FourierBase(XY_right_bd, W2NN, B2NN, hidden_layers, freqs, activate_name=act_func)
+                UBottom_NN = DNN_base.PDE_DNN_FourierBase(XY_bottom_bd, W2NN, B2NN, hidden_layers, freqs, activate_name=act_func)
+                UTop_NN = DNN_base.PDE_DNN_FourierBase(XY_top_bd, W2NN, B2NN, hidden_layers, freqs, activate_name=act_func)
+            elif R['model'] == 'PDE_CPDNN':
                 # 这个还需要研究，先放在这里。可分解的傅里叶展开，可以直接使用phase shift model
                 # 不可以分解的傅里叶展开怎么处理呢？
                 U_NN = CPDNN_base.CPS_DNN(XY_it, index2freq, Weights0_X, Biases0_X, Weights_COS_X, Biases_COS_X,
-                                           Weights_SIN_X, Biases_SIN_X, activate_name=tf.nn.relu)
+                                          Weights_SIN_X, Biases_SIN_X, activate_name=tf.nn.relu)
                 ULeft_NN = CPDNN_base.CPS_DNN(XY_left_bd[:, 0], index2freq, Weights0_X, Biases0_X, Weights_COS_X,
-                                               Biases_COS_X, Weights_SIN_X, Biases_SIN_X, activate_name=tf.nn.relu)
+                                              Biases_COS_X, Weights_SIN_X, Biases_SIN_X, activate_name=tf.nn.relu)
                 URight_NN = CPDNN_base.CPS_DNN(XY_right_bd[:, 0], index2freq, Weights0_X, Biases0_X, Weights_COS_X,
-                                                Biases_COS_X, Weights_SIN_X, Biases_SIN_X, activate_name=tf.nn.relu)
+                                               Biases_COS_X, Weights_SIN_X, Biases_SIN_X, activate_name=tf.nn.relu)
 
             X_it = tf.reshape(XY_it[:, 0], shape=[-1, 1])
             Y_it = tf.reshape(XY_it[:, 1], shape=[-1, 1])
@@ -306,6 +308,7 @@ def solve_laplace(R):
             else:
                 train_mse = tf.constant(0.0)
                 train_rel = tf.constant(0.0)
+                loss_it2Utrue = tf.square(0.0)
 
     t0 = time.time()
     loss_it_all, loss_bd_all, loss_all, train_mse_all, train_rel_all = [], [], [], [], []  # 空列表, 使用 append() 添加元素
@@ -482,7 +485,7 @@ if __name__ == "__main__":
             os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
     # 文件保存路径设置
-    store_file = 'pos1'
+    store_file = 'laplace2d'
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
     sys.path.append(BASE_DIR)
     OUT_DIR = os.path.join(BASE_DIR, store_file)
@@ -528,10 +531,10 @@ if __name__ == "__main__":
     # R['equa_name'] = 'PDE7'
 
     R['laplace_opt'] = 'p_laplace2multi_scale_implicit'
-    R['equa_name'] = 'multi_scale2D_1'
+    # R['equa_name'] = 'multi_scale2D_1'
     # R['equa_name'] = 'multi_scale2D_2'
     # R['equa_name'] = 'multi_scale2D_3'
-    # R['equa_name'] = 'multi_scale2D_4'
+    R['equa_name'] = 'multi_scale2D_4'
 
     # R['laplace_opt'] = 'p_laplace2multi_scale_explicit'
     # R['equa_name'] = 'multi_scale2D_6'
@@ -584,39 +587,40 @@ if __name__ == "__main__":
     R['weight_biases_model'] = 'general_model'
     # R['weight_biases_model'] = 'phase_shift_model'
 
+    R['regular_weight_model'] = 'L0'
     # R['regular_weight_model'] = 'L1'
-    R['regular_weight_model'] = 'L2'
+    # R['regular_weight_model'] = 'L2'
+    R['regular_weight_biases'] = 0.000  # Regularization parameter for weights
+    # R['regular_weight_biases'] = 0.001                  # Regularization parameter for weights
+    # R['regular_weight_biases'] = 0.0025                   # Regularization parameter for weights
 
     R['activate_penalty2bd_increase'] = 0
     R['boundary_penalty'] = 1000                          # Regularization parameter for boundary conditions
 
-    R['regular_weight_biases'] = 0.000                    # Regularization parameter for weights
-    # R['regular_weight_biases'] = 0.001                  # Regularization parameter for weights
-    # R['regular_weight_biases'] = 0.0025                   # Regularization parameter for weights
     R['learning_rate'] = 2e-4                             # 学习率
     R['learning_rate_decay'] = 5e-5                       # 学习率 decay
     R['optimizer_name'] = 'Adam'                          # 优化器
     R['train_group'] = 0
 
-    # R['hidden_layers'] = (100, 80, 60, 40, 20)
+    R['hidden_layers'] = (10, 8, 6, 4, 2)
     # R['hidden_layers'] = (100, 80, 60, 60, 40, 40, 20)
     # R['hidden_layers'] = (200, 100, 80, 50, 30)
     # R['hidden_layers'] = (300, 200, 150, 100, 100, 50, 50)
     # R['hidden_layers'] = (500, 400, 300, 200, 100)
     # R['hidden_layers'] = (500, 400, 300, 300, 200, 100)
     # R['hidden_layers'] = (500, 400, 300, 200, 200, 100)
-    R['hidden_layers'] = (500, 400, 300, 300, 200, 100, 100)
+    # R['hidden_layers'] = (500, 400, 300, 300, 200, 100, 100)
     # R['hidden_layers'] = (500, 300, 200, 200, 100, 100, 50)
     # R['hidden_layers'] = (1000, 800, 600, 400, 200)
     # R['hidden_layers'] = (1000, 500, 400, 300, 300, 200, 100, 100)
     # R['hidden_layers'] = (2000, 1500, 1000, 500, 250)
 
-    # R['model'] = 'laplace_DNN'                         # 使用的网络模型
-    # R['model'] = 'laplace_DNN_BN'
-    R['model'] = 'laplace_DNN_scale'
-    # R['model'] = 'laplace_DNN_scale_BN'
-    # R['model'] = 'laplace_DNN_adapt_scale'
-    # R['model'] = 'laplace_CPDNN'
+    # R['model'] = 'PDE_DNN'                         # 使用的网络模型
+    # R['model'] = 'PDE_DNN_BN'
+    # R['model'] = 'PDE_DNN_scale'
+    # R['model'] = 'PDE_DNN_adapt_scale'
+    R['model'] = 'PDE_DNN_FourierBase'
+    # R['model'] = 'PDE_CPDNN'
 
     # R['activate_func'] = 'relu'
     # R['activate_func'] = 'tanh'

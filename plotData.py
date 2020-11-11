@@ -191,11 +191,11 @@ def plotTrain_MSE_REL_1act_func(data2mse, data2rel, actName=None, seedNo=1000, o
     plt.ylabel('error', fontsize=18)
     plt.legend(fontsize=18)
     # plt.title('training error', fontsize=15)
-    if actName == 'sReLU':
+    if str.lower(actName) == 'srelu':
         fntmp = '%s/%strainErr_%s' % (outPath, seedNo, 'sReLU')
-    elif actName == 's2ReLU':
+    elif str.lower(actName) == 's2relu':
         fntmp = '%s/%strainErr_%s' % (outPath, seedNo, 's2ReLU')
-    elif actName == 'ReLU':
+    elif str.lower(actName) == 'relu':
         fntmp = '%s/%strainErr_%s' % (outPath, seedNo, 'ReLU')
     elif str.lower(actName) == 'elu':
         fntmp = '%s/%strainErr_%s' % (outPath, seedNo, 'elu')
@@ -623,15 +623,15 @@ def plot_Hot_solution2test(solu2test, size_vec2mat=20, actName=None, seedNo=1000
     plt.xticks(())
     plt.yticks(())
     # plt.title('exact solution', fontsize=14)
-    if actName == 'Utrue':
+    if str.lower(actName) == 'utrue':
         fntmp = '%s/%s%s' % (outPath, seedNo, 'Utrue2test')
-    elif actName == 'sReLU':
+    elif str.lower(actName) == 'srelu':
         fntmp = '%s/%s_%s' % (outPath, seedNo, 'UsReLU2test')
-    elif actName == 's2ReLU':
+    elif str.lower(actName) == 's2relu':
         fntmp = '%s/%s_%s' % (outPath, seedNo, 'Us2ReLU2test')
-    elif actName == 'ReLU':
+    elif str.lower(actName) == 'relu':
         fntmp = '%s/%s_%s' % (outPath, seedNo, 'UReLU2test')
-    elif actName == 'tanh':
+    elif str.lower(actName) == 'tanh':
         fntmp = '%s/%s_%s' % (outPath, seedNo, 'Utanh2test')
     DNN_tools.mySaveFig(plt, fntmp, ax=ax, isax=1, iseps=0)
 
@@ -698,11 +698,11 @@ def plot_Hot_point_wise_err(point_wise_err, size_vec2mat=20, actName=None, seedN
     plt.xticks(())
     plt.yticks(())
     # plt.title('point-wise error', fontsize=14)
-    if actName == 'sReLU':
+    if str.lower(actName) == 'srelu':
         fntmp = '%s/%spErr_%s' % (outPath, seedNo, 'sReLU')
-    elif actName == 's2ReLU':
+    elif str.lower(actName) == 's2relu':
         fntmp = '%s/%spErr_%s' % (outPath, seedNo, 's2ReLU')
-    elif actName == 'ReLU':
+    elif str.lower(actName) == 'relu':
         fntmp = '%s/%spErr_%s' % (outPath, seedNo, 'ReLU')
 
     DNN_tools.mySaveFig(plt, fntmp, ax=ax, isax=1, iseps=0)

@@ -104,7 +104,7 @@ def solve_laplace(R):
     # Weights, Biases = PDE_DNN_base.Initial_DNN2different_hidden(input_dim, out_dim, hidden_layers, flag)
     # Weights, Biases = DNN_base.initialize_NN_xavier(input_dim, out_dim, hidden_layers, flag1)
     # Weights, Biases = DNN_base.initialize_NN_random_normal(input_dim, out_dim, hidden_layers, flag1)
-    W2sin, B2sin = DNN_base.initialize_NN_random_normal2(input_dim, out_dim, hidden_layers, flag2sin)
+    W2NN1, B2NN1 = DNN_base.initialize_NN_random_normal2(input_dim, out_dim, hidden_layers, flag2sin)
     W2srelu, B2srelu = DNN_base.initialize_NN_random_normal2(input_dim, out_dim, hidden_layers, flag2srelu)
 
     if R['model'] == 'laplace_DNN_adapt_scale':
@@ -136,14 +136,14 @@ def solve_laplace(R):
             multi_scale_ceof = tf.Variable(initial_value=init_mixcoe, dtype='float32', name='M0')
 
             # 供选择的网络模式
-            if R['model'] == 'laplace_DNN':
-                U_NN1 = DNN_base.PDE_DNN(XYZ_it, W2sin, B2sin, hidden_layers, activate_name=act_func1)
-                ULeft_NN1 = DNN_base.PDE_DNN(XYZ_left_bd, W2sin, B2sin, hidden_layers, activate_name=act_func1)
-                URight_NN1 = DNN_base.PDE_DNN(XYZ_right_bd, W2sin, B2sin, hidden_layers, activate_name=act_func1)
-                UBottom_NN1 = DNN_base.PDE_DNN(XYZ_bottom_bd, W2sin, B2sin, hidden_layers, activate_name=act_func1)
-                UTop_NN1 = DNN_base.PDE_DNN(XYZ_top_bd, W2sin, B2sin, hidden_layers, activate_name=act_func1)
-                UFront_NN1 = DNN_base.PDE_DNN(XYZ_front_bd, W2sin, B2sin, hidden_layers,activate_name=act_func1)
-                UBehind_NN1 = DNN_base.PDE_DNN(XYZ_behind_bd, W2sin, B2sin, hidden_layers, activate_name=act_func1)
+            if R['model'] == 'PDE_DNN':
+                U_NN1 = DNN_base.PDE_DNN(XYZ_it, W2NN1, B2NN1, hidden_layers, activate_name=act_func1)
+                ULeft_NN1 = DNN_base.PDE_DNN(XYZ_left_bd, W2NN1, B2NN1, hidden_layers, activate_name=act_func1)
+                URight_NN1 = DNN_base.PDE_DNN(XYZ_right_bd, W2NN1, B2NN1, hidden_layers, activate_name=act_func1)
+                UBottom_NN1 = DNN_base.PDE_DNN(XYZ_bottom_bd, W2NN1, B2NN1, hidden_layers, activate_name=act_func1)
+                UTop_NN1 = DNN_base.PDE_DNN(XYZ_top_bd, W2NN1, B2NN1, hidden_layers, activate_name=act_func1)
+                UFront_NN1 = DNN_base.PDE_DNN(XYZ_front_bd, W2NN1, B2NN1, hidden_layers,activate_name=act_func1)
+                UBehind_NN1 = DNN_base.PDE_DNN(XYZ_behind_bd, W2NN1, B2NN1, hidden_layers, activate_name=act_func1)
 
                 U_NN2 = DNN_base.PDE_DNN(XYZ_it, W2srelu, B2srelu, hidden_layers, activate_name=act_func2)
                 ULeft_NN2 = DNN_base.PDE_DNN(XYZ_left_bd, W2srelu, B2srelu, hidden_layers, activate_name=act_func2)
@@ -152,39 +152,57 @@ def solve_laplace(R):
                 UTop_NN2 = DNN_base.PDE_DNN(XYZ_top_bd, W2srelu, B2srelu, hidden_layers, activate_name=act_func2)
                 UFront_NN2 = DNN_base.PDE_DNN(XYZ_front_bd, W2srelu, B2srelu, hidden_layers, activate_name=act_func2)
                 UBehind_NN2 = DNN_base.PDE_DNN(XYZ_behind_bd, W2srelu, B2srelu, hidden_layers, activate_name=act_func2)
-            elif R['model'] == 'laplace_DNN_scale':
-                freq = np.concatenate(([1], np.arange(1, 100 - 1)), axis=0)
-                U_NN1 = DNN_base.PDE_DNN_scale(XYZ_it, W2sin, B2sin, hidden_layers, freq, activate_name=act_func1)
-                ULeft_NN1 = DNN_base.PDE_DNN_scale(XYZ_left_bd, W2sin, B2sin, hidden_layers, freq, activate_name=act_func1)
-                URight_NN1 = DNN_base.PDE_DNN_scale(XYZ_right_bd, W2sin, B2sin, hidden_layers, freq, activate_name=act_func1)
-                UBottom_NN1 = DNN_base.PDE_DNN_scale(XYZ_bottom_bd, W2sin, B2sin, hidden_layers, freq, activate_name=act_func1)
-                UTop_NN1 = DNN_base.PDE_DNN_scale(XYZ_top_bd, W2sin, B2sin, hidden_layers, freq, activate_name=act_func1)
-                UFront_NN1 = DNN_base.PDE_DNN_scale(XYZ_front_bd, W2sin, B2sin, hidden_layers, freq, activate_name=act_func1)
-                UBehind_NN1 = DNN_base.PDE_DNN_scale(XYZ_behind_bd, W2sin, B2sin, hidden_layers, freq, activate_name=act_func1)
+            elif R['model'] == 'PDE_DNN_scale':
+                freqs = np.concatenate(([1], np.arange(1, 100 - 1)), axis=0)
+                U_NN1 = DNN_base.PDE_DNN_scale(XYZ_it, W2NN1, B2NN1, hidden_layers, freqs, activate_name=act_func1)
+                ULeft_NN1 = DNN_base.PDE_DNN_scale(XYZ_left_bd, W2NN1, B2NN1, hidden_layers, freqs, activate_name=act_func1)
+                URight_NN1 = DNN_base.PDE_DNN_scale(XYZ_right_bd, W2NN1, B2NN1, hidden_layers, freqs, activate_name=act_func1)
+                UBottom_NN1 = DNN_base.PDE_DNN_scale(XYZ_bottom_bd, W2NN1, B2NN1, hidden_layers, freqs, activate_name=act_func1)
+                UTop_NN1 = DNN_base.PDE_DNN_scale(XYZ_top_bd, W2NN1, B2NN1, hidden_layers, freqs, activate_name=act_func1)
+                UFront_NN1 = DNN_base.PDE_DNN_scale(XYZ_front_bd, W2NN1, B2NN1, hidden_layers, freqs, activate_name=act_func1)
+                UBehind_NN1 = DNN_base.PDE_DNN_scale(XYZ_behind_bd, W2NN1, B2NN1, hidden_layers, freqs, activate_name=act_func1)
 
-                U_NN2= DNN_base.PDE_DNN_scale(XYZ_it, W2srelu, B2srelu, hidden_layers, freq, activate_name=act_func2)
-                ULeft_NN2= DNN_base.PDE_DNN_scale(XYZ_left_bd, W2srelu, B2srelu, hidden_layers, freq, activate_name=act_func2)
-                URight_NN2= DNN_base.PDE_DNN_scale(XYZ_right_bd, W2srelu, B2srelu, hidden_layers, freq, activate_name=act_func2)
-                UBottom_NN2= DNN_base.PDE_DNN_scale(XYZ_bottom_bd, W2srelu, B2srelu, hidden_layers, freq, activate_name=act_func2)
-                UTop_NN2= DNN_base.PDE_DNN_scale(XYZ_top_bd, W2srelu, B2srelu, hidden_layers, freq, activate_name=act_func2)
-                UFront_NN2 = DNN_base.PDE_DNN_scale(XYZ_front_bd, W2srelu, B2srelu, hidden_layers, freq, activate_name=act_func2)
-                UBehind_NN2 = DNN_base.PDE_DNN_scale(XYZ_behind_bd, W2srelu, B2srelu, hidden_layers, freq, activate_name=act_func2)
-            elif R['model'] == 'laplace_DNN_adapt_scale':
-                U_NN1 = DNN_base.PDE_DNN_adapt_scale(XYZ_it, W2sin, B2sin, hidden_layers, multi_scale_ceof, activate_name=act_func1)
-                ULeft_NN1 = DNN_base.PDE_DNN_adapt_scale(XYZ_left_bd, W2sin, B2sin, hidden_layers, multi_scale_ceof, activate_name=act_func1)
-                URight_NN1 = DNN_base.PDE_DNN_adapt_scale(XYZ_right_bd, W2sin, B2sin, hidden_layers, multi_scale_ceof, activate_name=act_func1)
-                UBottom_NN1 = DNN_base.PDE_DNN_adapt_scale(XYZ_bottom_bd, W2sin, B2sin, hidden_layers, multi_scale_ceof, activate_name=act_func1)
-                UTop_NN1 = DNN_base.PDE_DNN_adapt_scale(XYZ_top_bd, W2sin, B2sin, hidden_layers, multi_scale_ceof, activate_name=act_func1)
-                UFront_NN1 = DNN_base.PDE_DNN_adapt_scale(XYZ_front_bd, W2sin, B2sin, hidden_layers, multi_scale_ceof, activate_name=act_func1)
-                UBehind_NN1 = DNN_base.PDE_DNN_adapt_scale(XYZ_behind_bd, W2sin, B2sin, hidden_layers, multi_scale_ceof, activate_name=act_func1)
+                U_NN2= DNN_base.PDE_DNN_scale(XYZ_it, W2srelu, B2srelu, hidden_layers, freqs, activate_name=act_func2)
+                ULeft_NN2= DNN_base.PDE_DNN_scale(XYZ_left_bd, W2srelu, B2srelu, hidden_layers, freqs, activate_name=act_func2)
+                URight_NN2= DNN_base.PDE_DNN_scale(XYZ_right_bd, W2srelu, B2srelu, hidden_layers, freqs, activate_name=act_func2)
+                UBottom_NN2= DNN_base.PDE_DNN_scale(XYZ_bottom_bd, W2srelu, B2srelu, hidden_layers, freqs, activate_name=act_func2)
+                UTop_NN2= DNN_base.PDE_DNN_scale(XYZ_top_bd, W2srelu, B2srelu, hidden_layers, freqs, activate_name=act_func2)
+                UFront_NN2 = DNN_base.PDE_DNN_scale(XYZ_front_bd, W2srelu, B2srelu, hidden_layers, freqs, activate_name=act_func2)
+                UBehind_NN2 = DNN_base.PDE_DNN_scale(XYZ_behind_bd, W2srelu, B2srelu, hidden_layers, freqs, activate_name=act_func2)
+            elif R['model'] == 'PDE_DNN_adapt_scale':
+                freqs = np.concatenate(([1], np.arange(1, 100 - 1)), axis=0)
+                U_NN1 = DNN_base.PDE_DNN_adapt_scale(XYZ_it, W2NN1, B2NN1, hidden_layers, freqs, activate_name=act_func1)
+                ULeft_NN1 = DNN_base.PDE_DNN_adapt_scale(XYZ_left_bd, W2NN1, B2NN1, hidden_layers, freqs, activate_name=act_func1)
+                URight_NN1 = DNN_base.PDE_DNN_adapt_scale(XYZ_right_bd, W2NN1, B2NN1, hidden_layers, freqs, activate_name=act_func1)
+                UBottom_NN1 = DNN_base.PDE_DNN_adapt_scale(XYZ_bottom_bd, W2NN1, B2NN1, hidden_layers, freqs, activate_name=act_func1)
+                UTop_NN1 = DNN_base.PDE_DNN_adapt_scale(XYZ_top_bd, W2NN1, B2NN1, hidden_layers, freqs, activate_name=act_func1)
+                UFront_NN1 = DNN_base.PDE_DNN_adapt_scale(XYZ_front_bd, W2NN1, B2NN1, hidden_layers, freqs, activate_name=act_func1)
+                UBehind_NN1 = DNN_base.PDE_DNN_adapt_scale(XYZ_behind_bd, W2NN1, B2NN1, hidden_layers, freqs, activate_name=act_func1)
 
-                U_NN2 = DNN_base.PDE_DNN_adapt_scale(XYZ_it, W2srelu, B2srelu, hidden_layers, multi_scale_ceof, activate_name=act_func2)
-                ULeft_NN2 = DNN_base.PDE_DNN_adapt_scale(XYZ_left_bd, W2srelu, B2srelu, hidden_layers, multi_scale_ceof, activate_name=act_func2)
-                URight_NN2 = DNN_base.PDE_DNN_adapt_scale(XYZ_right_bd, W2srelu, B2srelu, hidden_layers, multi_scale_ceof, activate_name=act_func2)
-                UBottom_NN2 = DNN_base.PDE_DNN_adapt_scale(XYZ_bottom_bd, W2srelu, B2srelu, hidden_layers, multi_scale_ceof, activate_name=act_func2)
-                UTop_NN2 = DNN_base.PDE_DNN_adapt_scale(XYZ_top_bd, W2srelu, B2srelu, hidden_layers, multi_scale_ceof, activate_name=act_func2)
-                UFront_NN2 = DNN_base.PDE_DNN_adapt_scale(XYZ_front_bd, W2srelu, B2srelu, hidden_layers, multi_scale_ceof, activate_name=act_func2)
-                UBehind_NN2 = DNN_base.PDE_DNN_adapt_scale(XYZ_behind_bd, W2srelu, B2srelu, hidden_layers, multi_scale_ceof, activate_name=act_func2)
+                U_NN2 = DNN_base.PDE_DNN_adapt_scale(XYZ_it, W2srelu, B2srelu, hidden_layers, freqs, activate_name=act_func2)
+                ULeft_NN2 = DNN_base.PDE_DNN_adapt_scale(XYZ_left_bd, W2srelu, B2srelu, hidden_layers, freqs, activate_name=act_func2)
+                URight_NN2 = DNN_base.PDE_DNN_adapt_scale(XYZ_right_bd, W2srelu, B2srelu, hidden_layers, freqs, activate_name=act_func2)
+                UBottom_NN2 = DNN_base.PDE_DNN_adapt_scale(XYZ_bottom_bd, W2srelu, B2srelu, hidden_layers, freqs, activate_name=act_func2)
+                UTop_NN2 = DNN_base.PDE_DNN_adapt_scale(XYZ_top_bd, W2srelu, B2srelu, hidden_layers, freqs, activate_name=act_func2)
+                UFront_NN2 = DNN_base.PDE_DNN_adapt_scale(XYZ_front_bd, W2srelu, B2srelu, hidden_layers, freqs, activate_name=act_func2)
+                UBehind_NN2 = DNN_base.PDE_DNN_adapt_scale(XYZ_behind_bd, W2srelu, B2srelu, hidden_layers, freqs, activate_name=act_func2)
+            elif R['model'] == 'PDE_DNN_FourierBase':
+                freqs = np.concatenate(([1], np.arange(1, 100 - 1)), axis=0)
+                U_NN1 = DNN_base.PDE_DNN_FourierBase(XYZ_it, W2NN1, B2NN1, hidden_layers, freqs, activate_name=act_func1)
+                ULeft_NN1 = DNN_base.PDE_DNN_FourierBase(XYZ_left_bd, W2NN1, B2NN1, hidden_layers, freqs, activate_name=act_func1)
+                URight_NN1 = DNN_base.PDE_DNN_FourierBase(XYZ_right_bd, W2NN1, B2NN1, hidden_layers, freqs, activate_name=act_func1)
+                UBottom_NN1 = DNN_base.PDE_DNN_FourierBase(XYZ_bottom_bd, W2NN1, B2NN1, hidden_layers, freqs, activate_name=act_func1)
+                UTop_NN1 = DNN_base.PDE_DNN_FourierBase(XYZ_top_bd, W2NN1, B2NN1, hidden_layers, freqs, activate_name=act_func1)
+                UFront_NN1 = DNN_base.PDE_DNN_FourierBase(XYZ_front_bd, W2NN1, B2NN1, hidden_layers, freqs, activate_name=act_func1)
+                UBehind_NN1 = DNN_base.PDE_DNN_FourierBase(XYZ_behind_bd, W2NN1, B2NN1, hidden_layers, freqs, activate_name=act_func1)
+
+                U_NN2 = DNN_base.PDE_DNN_FourierBase(XYZ_it, W2srelu, B2srelu, hidden_layers, freqs, activate_name=act_func2)
+                ULeft_NN2 = DNN_base.PDE_DNN_FourierBase(XYZ_left_bd, W2srelu, B2srelu, hidden_layers, freqs, activate_name=act_func2)
+                URight_NN2 = DNN_base.PDE_DNN_FourierBase(XYZ_right_bd, W2srelu, B2srelu, hidden_layers, freqs, activate_name=act_func2)
+                UBottom_NN2 = DNN_base.PDE_DNN_FourierBase(XYZ_bottom_bd, W2srelu, B2srelu, hidden_layers, freqs, activate_name=act_func2)
+                UTop_NN2 = DNN_base.PDE_DNN_FourierBase(XYZ_top_bd, W2srelu, B2srelu, hidden_layers, freqs, activate_name=act_func2)
+                UFront_NN2 = DNN_base.PDE_DNN_FourierBase(XYZ_front_bd, W2srelu, B2srelu, hidden_layers, freqs, activate_name=act_func2)
+                UBehind_NN2 = DNN_base.PDE_DNN_FourierBase(XYZ_behind_bd, W2srelu, B2srelu, hidden_layers, freqs, activate_name=act_func2)
 
             X_it = tf.reshape(XYZ_it[:, 0], shape=[-1, 1])
             Y_it = tf.reshape(XYZ_it[:, 1], shape=[-1, 1])
@@ -196,19 +214,19 @@ def solve_laplace(R):
                 dU_NN2 = tf.gradients(U_NN2, XYZ_it)[0]  # * 行 3 列
                 dU_hat_norm2NN2 = tf.reshape(tf.sqrt(tf.reduce_sum(tf.square(dU_NN2), axis=-1)), shape=[-1, 1])
                 if R['laplace_opt'] == 'general_laplace':
-                    laplace_pow2sin = tf.square(dU_hat_norm2NN1)
-                    loss_it_variational_NN1 = (1.0 / 2) *laplace_pow2sin - tf.multiply(f(X_it, Y_it, Z_it), U_NN1)
+                    laplace_pow2NN1 = tf.square(dU_hat_norm2NN1)
+                    loss_it_variational_NN1 = (1.0 / 2) *laplace_pow2NN1 - tf.multiply(f(X_it, Y_it, Z_it), U_NN1)
 
-                    laplace_pow2srelu = tf.square(dU_hat_norm2NN2)
-                    loss_it_variational_NN2 = (1.0 / 2) * laplace_pow2srelu - tf.multiply(f(X_it, Y_it, Z_it), U_NN2)
+                    laplace_pow2NN2 = tf.square(dU_hat_norm2NN2)
+                    loss_it_variational_NN2 = (1.0 / 2) * laplace_pow2NN2 - tf.multiply(f(X_it, Y_it, Z_it), U_NN2)
                 else:
                     a_eps = A_eps(X_it, Y_it, Z_it)                          # * 行 1 列
 
-                    laplace_p_pow2sin = a_eps*tf.pow(dU_hat_norm2NN1, p)
-                    loss_it_variational_NN1 = (1.0 / p) * laplace_p_pow2sin - tf.multiply(f(X_it, Y_it, Z_it), U_NN1)
+                    laplace_p_pow2NN1 = a_eps*tf.pow(dU_hat_norm2NN1, p)
+                    loss_it_variational_NN1 = (1.0 / p) * laplace_p_pow2NN1 - tf.multiply(f(X_it, Y_it, Z_it), U_NN1)
 
-                    laplace_p_pow2srelu = a_eps * tf.pow(dU_hat_norm2NN2, p)
-                    loss_it_variational_NN2 = (1.0 / p) * laplace_p_pow2srelu - tf.multiply(f(X_it, Y_it, Z_it), U_NN2)
+                    laplace_p_pow2NN2 = a_eps * tf.pow(dU_hat_norm2NN2, p)
+                    loss_it_variational_NN2 = (1.0 / p) * laplace_p_pow2NN2 - tf.multiply(f(X_it, Y_it, Z_it), U_NN2)
                 Loss_it2NN1 = tf.reduce_mean(loss_it_variational_NN1) * np.power(region_rt - region_lb, p)
                 Loss_it2NN2 = tf.reduce_mean(loss_it_variational_NN2) * np.power(region_rt - region_lb, p)
 
@@ -221,18 +239,18 @@ def solve_laplace(R):
                 Loss_bd2NN2= tf.reduce_mean(loss_bd_square2NN2)
 
             if R['regular_weight_model'] == 'L1':
-                regular_WB2sin = DNN_base.regular_weights_biases_L1(W2sin, B2sin)    # 正则化权重和偏置 L1正则化
-                regular_WB2srelu = DNN_base.regular_weights_biases_L1(W2srelu, B2srelu)
+                regular_WB2NN1 = DNN_base.regular_weights_biases_L1(W2NN1, B2NN1)    # 正则化权重和偏置 L1正则化
+                regular_WB2NN2 = DNN_base.regular_weights_biases_L1(W2srelu, B2srelu)
             elif R['regular_weight_model'] == 'L2':
-                regular_WB2sin = DNN_base.regular_weights_biases_L2(W2sin, B2sin)    # 正则化权重和偏置 L2正则化
-                regular_WB2srelu = DNN_base.regular_weights_biases_L2(W2srelu, B2srelu)
+                regular_WB2NN1 = DNN_base.regular_weights_biases_L2(W2NN1, B2NN1)    # 正则化权重和偏置 L2正则化
+                regular_WB2NN2 = DNN_base.regular_weights_biases_L2(W2srelu, B2srelu)
             else:
-                regular_WB2sin = 0.0                                         # 无正则化权重参数
-                regular_WB2srelu = 0.0
+                regular_WB2NN1 = tf.constant(0.0)                                         # 无正则化权重参数
+                regular_WB2NN2 = tf.constant(0.0)
 
-            Loss2NN1 = Loss_it2NN1 + boundary_penalty * Loss_bd2NN1 + wb_regular * regular_WB2sin       # 要优化的loss function
+            Loss2NN1 = Loss_it2NN1 + boundary_penalty * Loss_bd2NN1 + wb_regular * regular_WB2NN1       # 要优化的loss function
 
-            Loss2NN2 = Loss_it2NN2 + boundary_penalty * Loss_bd2NN2 + wb_regular * regular_WB2srelu  # 要优化的loss function
+            Loss2NN2 = Loss_it2NN2 + boundary_penalty * Loss_bd2NN2 + wb_regular * regular_WB2NN2  # 要优化的loss function
 
             my_optimizer = tf.train.AdamOptimizer(in_learning_rate)
             if R['train_group'] == 1:
@@ -454,14 +472,12 @@ def solve_laplace(R):
             plotData.plot_Hot_solution2test(utest_nn2, size_vec2mat=size2test, actName=act_func2,
                                             seedNo=R['seed'], outPath=R['FolderName'])
 
-        saveData.save_testMSE_REL2mat(test_mse_all2NN1, test_rel_all2NN1, actName=act_func1,
-                                      outPath=R['FolderName'])
-        saveData.save_testMSE_REL2mat(test_mse_all2NN2, test_rel_all2NN2, actName=act_func2,
-                                      outPath=R['FolderName'])
+        saveData.save_testMSE_REL2mat(test_mse_all2NN1, test_rel_all2NN1, actName=act_func1, outPath=R['FolderName'])
+        saveData.save_testMSE_REL2mat(test_mse_all2NN2, test_rel_all2NN2, actName=act_func2, outPath=R['FolderName'])
 
-        plotData.plot_2TestMSEs(test_mse_all2NN1, test_mse_all2NN2, mseType1='s2ReLU', mseType2='sReLU',
+        plotData.plot_2TestMSEs(test_mse_all2NN1, test_mse_all2NN2, mseType1=act_func1, mseType2=act_func2,
                                 epoches=test_epoch, seedNo=R['seed'], outPath=R['FolderName'])
-        plotData.plot_2TestRELs(test_rel_all2NN1, test_rel_all2NN2, relType1='s2ReLU', relType2='sReLU',
+        plotData.plot_2TestRELs(test_rel_all2NN1, test_rel_all2NN2, relType1=act_func1, relType2=act_func2,
                                 epoches=test_epoch, seedNo=R['seed'], outPath=R['FolderName'])
 
         plotData.plot_Test_MSE_REL_2ActFuncs(test_mse_all2NN1, test_rel_all2NN1, test_mse_all2NN2,
@@ -591,11 +607,12 @@ if __name__ == "__main__":
     R['hidden_layers'] = (1000, 500, 400, 300, 300, 200, 100, 100)
     # R['hidden_layers'] = (2000, 1500, 1000, 500, 250)
 
-    # R['model'] = 'laplace_DNN'                         # 使用的网络模型
-    # R['model'] = 'laplace_DNN_BN'
-    R['model'] = 'laplace_DNN_scale'
-    # R['model'] = 'laplace_DNN_scale_BN'
-    # R['model'] = 'laplace_DNN_adapt_scale'
+    # R['model'] = 'PDE_DNN'                         # 使用的网络模型
+    # R['model'] = 'PDE_DNN_BN'
+    R['model'] = 'PDE_DNN_scale'
+    # R['model'] = 'PDE_DNN_adapt_scale'
+    # R['model'] = 'PDE_DNN_FourierBase'
+    # R['model'] = 'PDE_CPDNN'
 
     # 激活函数的选择
     # R['act_name2NN1'] = 'relu'

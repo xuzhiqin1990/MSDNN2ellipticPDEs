@@ -162,7 +162,7 @@ def solve_laplace(R):
             multi_scale_ceof = tf.Variable(initial_value=init_mixcoe, dtype='float32', name='M0')
 
             # 供选择的网络模式
-            if R['model'] == 'general_DNN':
+            if R['model'] == 'PDE_DNN':
                 U_NN1 = DNN_base.PDE_DNN(XY_it, W2NN1, B2NN1, hidden_layers, activate_name=act_func1)
                 ULeft_NN1 = DNN_base.PDE_DNN(XY_left_bd, W2NN1, B2NN1, hidden_layers, activate_name=act_func1)
                 URight_NN1 = DNN_base.PDE_DNN(XY_right_bd, W2NN1, B2NN1, hidden_layers, activate_name=act_func1)
@@ -174,7 +174,7 @@ def solve_laplace(R):
                 URight_NN2 = DNN_base.PDE_DNN(XY_right_bd, W2NN2, B2NN2, hidden_layers, activate_name=act_func2)
                 UBottom_NN2 = DNN_base.PDE_DNN(XY_bottom_bd, W2NN2, B2NN2, hidden_layers, activate_name=act_func2)
                 UTop_NN2 = DNN_base.PDE_DNN(XY_top_bd, W2NN2, B2NN2, hidden_layers, activate_name=act_func2)
-            elif R['model'] == 'scale_DNN':
+            elif R['model'] == 'PDE_DNN_scale':
                 freq = np.concatenate(([1], np.arange(1, 100 - 1)), axis=0)
                 U_NN1 = DNN_base.PDE_DNN_scale(XY_it, W2NN1, B2NN1, hidden_layers, freq, activate_name=act_func1)
                 ULeft_NN1 = DNN_base.PDE_DNN_scale(XY_left_bd, W2NN1, B2NN1, hidden_layers, freq, activate_name=act_func1)
@@ -187,47 +187,32 @@ def solve_laplace(R):
                 URight_NN2= DNN_base.PDE_DNN_scale(XY_right_bd, W2NN2, B2NN2, hidden_layers, freq, activate_name=act_func2)
                 UBottom_NN2= DNN_base.PDE_DNN_scale(XY_bottom_bd, W2NN2, B2NN2, hidden_layers, freq, activate_name=act_func2)
                 UTop_NN2= DNN_base.PDE_DNN_scale(XY_top_bd, W2NN2, B2NN2, hidden_layers, freq, activate_name=act_func2)
-            elif R['model'] == 'sin_scale_DNN':
+            elif R['model'] == 'PDE_DNN_FourierBase':
                 freq = np.concatenate(([1], np.arange(1, 100 - 1)), axis=0)
-                U_NN1 = DNN_base.PDE_DNN_sinscale(XY_it, W2NN1, B2NN1, hidden_layers, freq, activate_name=act_func1)
-                ULeft_NN1 = DNN_base.PDE_DNN_sinscale(XY_left_bd, W2NN1, B2NN1, hidden_layers, freq, activate_name=act_func1)
-                URight_NN1 = DNN_base.PDE_DNN_sinscale(XY_right_bd, W2NN1, B2NN1, hidden_layers, freq, activate_name=act_func1)
-                UBottom_NN1 = DNN_base.PDE_DNN_sinscale(XY_bottom_bd, W2NN1, B2NN1, hidden_layers, freq, activate_name=act_func1)
-                UTop_NN1 = DNN_base.PDE_DNN_sinscale(XY_top_bd, W2NN1, B2NN1, hidden_layers, freq, activate_name=act_func1)
+                U_NN1 = DNN_base.PDE_DNN_FourierBase(XY_it, W2NN1, B2NN1, hidden_layers, freq, activate_name=act_func1)
+                ULeft_NN1 = DNN_base.PDE_DNN_FourierBase(XY_left_bd, W2NN1, B2NN1, hidden_layers, freq, activate_name=act_func1)
+                URight_NN1 = DNN_base.PDE_DNN_FourierBase(XY_right_bd, W2NN1, B2NN1, hidden_layers, freq, activate_name=act_func1)
+                UBottom_NN1 = DNN_base.PDE_DNN_FourierBase(XY_bottom_bd, W2NN1, B2NN1, hidden_layers, freq, activate_name=act_func1)
+                UTop_NN1 = DNN_base.PDE_DNN_FourierBase(XY_top_bd, W2NN1, B2NN1, hidden_layers, freq, activate_name=act_func1)
 
-                U_NN2 = DNN_base.PDE_DNN_scale(XY_it, W2NN2, B2NN2, hidden_layers, freq, activate_name=act_func2)
-                ULeft_NN2 = DNN_base.PDE_DNN_scale(XY_left_bd, W2NN2, B2NN2, hidden_layers, freq, activate_name=act_func2)
-                URight_NN2 = DNN_base.PDE_DNN_scale(XY_right_bd, W2NN2, B2NN2, hidden_layers, freq, activate_name=act_func2)
-                UBottom_NN2 = DNN_base.PDE_DNN_scale(XY_bottom_bd, W2NN2, B2NN2, hidden_layers, freq, activate_name=act_func2)
-                UTop_NN2 = DNN_base.PDE_DNN_scale(XY_top_bd, W2NN2, B2NN2, hidden_layers, freq, activate_name=act_func2)
+                U_NN2 = DNN_base.PDE_DNN_FourierBase(XY_it, W2NN2, B2NN2, hidden_layers, freq, activate_name=act_func2)
+                ULeft_NN2 = DNN_base.PDE_DNN_FourierBase(XY_left_bd, W2NN2, B2NN2, hidden_layers, freq, activate_name=act_func2)
+                URight_NN2 = DNN_base.PDE_DNN_FourierBase(XY_right_bd, W2NN2, B2NN2, hidden_layers, freq, activate_name=act_func2)
+                UBottom_NN2 = DNN_base.PDE_DNN_FourierBase(XY_bottom_bd, W2NN2, B2NN2, hidden_layers, freq, activate_name=act_func2)
+                UTop_NN2 = DNN_base.PDE_DNN_FourierBase(XY_top_bd, W2NN2, B2NN2, hidden_layers, freq, activate_name=act_func2)
+            elif R['model'] == 'PDE_DNN_adapt_scale':
+                freqs = np.concatenate(([1], np.arange(1, 100 - 1)), axis=0)
+                U_NN1 = DNN_base.PDE_DNN_adapt_scale(XY_it, W2NN1, B2NN1, hidden_layers, freqs, activate_name=act_func1)
+                ULeft_NN1 = DNN_base.PDE_DNN_adapt_scale(XY_left_bd, W2NN1, B2NN1, hidden_layers, freqs, activate_name=act_func1)
+                URight_NN1 = DNN_base.PDE_DNN_adapt_scale(XY_right_bd, W2NN1, B2NN1, hidden_layers, freqs, activate_name=act_func1)
+                UBottom_NN1 = DNN_base.PDE_DNN_adapt_scale(XY_bottom_bd, W2NN1, B2NN1, hidden_layers, freqs, activate_name=act_func1)
+                UTop_NN1 = DNN_base.PDE_DNN_adapt_scale(XY_top_bd, W2NN1, B2NN1, hidden_layers, freqs, activate_name=act_func1)
 
-                # U_NN2= DNN_base.PDE_DNN_sinscale(XY_it, W2NN2, B2NN2, hidden_layers, freq, activate_name=act_func2)
-                # ULeft_NN2= DNN_base.PDE_DNN_sinscale(XY_left_bd, W2NN2, B2NN2, hidden_layers, freq, activate_name=act_func2)
-                # URight_NN2= DNN_base.PDE_DNN_sinscale(XY_right_bd, W2NN2, B2NN2, hidden_layers, freq, activate_name=act_func2)
-                # UBottom_NN2= DNN_base.PDE_DNN_sinscale(XY_bottom_bd, W2NN2, B2NN2, hidden_layers, freq, activate_name=act_func2)
-                # UTop_NN2= DNN_base.PDE_DNN_sinscale(XY_top_bd, W2NN2, B2NN2, hidden_layers, freq, activate_name=act_func2)
-            elif R['model'] == 'adapt_scale_DNN':
-                U_NN1 = DNN_base.PDE_DNN_adapt_scale(XY_it, W2NN1, B2NN1, hidden_layers, multi_scale_ceof,
-                                                     activate_name=act_func1)
-                ULeft_NN1 = DNN_base.PDE_DNN_adapt_scale(XY_left_bd, W2NN1, B2NN1, hidden_layers, multi_scale_ceof,
-                                                         activate_name=act_func1)
-                URight_NN1 = DNN_base.PDE_DNN_adapt_scale(XY_right_bd, W2NN1, B2NN1, hidden_layers, multi_scale_ceof,
-                                                          activate_name=act_func1)
-                UBottom_NN1 = DNN_base.PDE_DNN_adapt_scale(XY_bottom_bd, W2NN1, B2NN1, hidden_layers, multi_scale_ceof,
-                                                           activate_name=act_func1)
-                UTop_NN1 = DNN_base.PDE_DNN_adapt_scale(XY_top_bd, W2NN1, B2NN1, hidden_layers, multi_scale_ceof,
-                                                        activate_name=act_func1)
-
-                U_NN2 = DNN_base.PDE_DNN_adapt_scale(XY_it, W2NN2, B2NN2, hidden_layers, multi_scale_ceof,
-                                                     activate_name=act_func2)
-                ULeft_NN2 = DNN_base.PDE_DNN_adapt_scale(XY_left_bd, W2NN2, B2NN2, hidden_layers, multi_scale_ceof,
-                                                         activate_name=act_func2)
-                URight_NN2 = DNN_base.PDE_DNN_adapt_scale(XY_right_bd, W2NN2, B2NN2, hidden_layers, multi_scale_ceof,
-                                                          activate_name=act_func2)
-                UBottom_NN2 = DNN_base.PDE_DNN_adapt_scale(XY_bottom_bd, W2NN2, B2NN2, hidden_layers, multi_scale_ceof,
-                                                           activate_name=act_func2)
-                UTop_NN2 = DNN_base.PDE_DNN_adapt_scale(XY_top_bd, W2NN2, B2NN2, hidden_layers, multi_scale_ceof,
-                                                        activate_name=act_func2)
+                U_NN2 = DNN_base.PDE_DNN_adapt_scale(XY_it, W2NN2, B2NN2, hidden_layers, freqs, activate_name=act_func2)
+                ULeft_NN2 = DNN_base.PDE_DNN_adapt_scale(XY_left_bd, W2NN2, B2NN2, hidden_layers, freqs, activate_name=act_func2)
+                URight_NN2 = DNN_base.PDE_DNN_adapt_scale(XY_right_bd, W2NN2, B2NN2, hidden_layers, freqs, activate_name=act_func2)
+                UBottom_NN2 = DNN_base.PDE_DNN_adapt_scale(XY_bottom_bd, W2NN2, B2NN2, hidden_layers, freqs, activate_name=act_func2)
+                UTop_NN2 = DNN_base.PDE_DNN_adapt_scale(XY_top_bd, W2NN2, B2NN2, hidden_layers, freqs, activate_name=act_func2)
 
             X_it = tf.reshape(XY_it[:, 0], shape=[-1, 1])
             Y_it = tf.reshape(XY_it[:, 1], shape=[-1, 1])
@@ -473,8 +458,7 @@ def solve_laplace(R):
         saveData.save_trainLoss2mat_1actFunc(lossIt_all2NN2, lossBD_all2NN2, loss_all2NN2, actName=act_func2,
                                              outPath=R['FolderName'])
         saveData.save_train_MSE_REL2mat(train_mse_all2NN1, train_rel_all2NN1, actName=act_func1, outPath=R['FolderName'])
-        saveData.save_train_MSE_REL2mat(train_mse_all2NN2, train_rel_all2NN2, actName=act_func2,
-                                        outPath=R['FolderName'])
+        saveData.save_train_MSE_REL2mat(train_mse_all2NN2, train_rel_all2NN2, actName=act_func2, outPath=R['FolderName'])
 
         plotData.plotTrain_losses_2act_funs(lossIt_all2NN1, lossIt_all2NN2, lossName1=act_func1, lossName2=act_func2,
                                             lossType='loss_it', seedNo=R['seed'], outPath=R['FolderName'])
@@ -556,7 +540,7 @@ if __name__ == "__main__":
             os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
     # 文件保存路径设置
-    store_file = 'pos1'
+    store_file = 'laplace2d'
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
     sys.path.append(BASE_DIR)
     OUT_DIR = os.path.join(BASE_DIR, store_file)
@@ -687,10 +671,12 @@ if __name__ == "__main__":
     # R['hidden_layers'] = (1000, 500, 400, 300, 300, 200, 100, 100)
     # R['hidden_layers'] = (2000, 1500, 1000, 500, 250)
 
-    # R['model'] = 'general_DNN'                         # 使用的网络模型
-    R['model'] = 'scale_DNN'
-    # R['model'] = 'sin_scale_DNN'
-    # R['model'] = 'adapt_scale_DNN'
+    # R['model'] = 'PDE_DNN'                         # 使用的网络模型
+    # R['model'] = 'PDE_DNN_BN'
+    R['model'] = 'PDE_DNN_scale'
+    # R['model'] = 'PDE_DNN_adapt_scale'
+    # R['model'] = 'PDE_DNN_FourierBase'
+    # R['model'] = 'PDE_CPDNN'
 
     # 激活函数的选择
     # R['act_name2NN1'] = 'relu'
