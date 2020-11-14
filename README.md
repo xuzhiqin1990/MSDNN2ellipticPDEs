@@ -3,7 +3,7 @@
 This repository contains the code for the following paper:
 
 # A DNN-based algorithm for multi-scale elliptic problems  
-created by Xi-An Li, Zhi-Qin Jhoun, Xu and Lei Zhang
+created by Xi-An Li, Zhi-Qin John, Xu and Lei Zhang
 
 [[Paper]](https://arxiv.org/abs/2009.14597)
 
